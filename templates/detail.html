@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Skripsi</title>
+{% endblock %}
+
+{% block body %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="/">Skripsi</a>
+  
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Abstrak</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/dataset">Dataset</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/preprocessing">Normalization</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/discretization">Discretization</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/kmeans">K-Means Clustering</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/pso">PSO</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/naive_bayes">Naive Bayes Classifier</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/detail">Detail Klasifikasi</a>
+        </li>
+      </ul>      
+    </div>
+</nav>
+
+<div class="container mt-5">
+
+    <h4 id="loader" class="text-center">Detail Klasifikasi...</h4>
+
+    <h5 class="caption text-center" style="display: none">Tabel Hasil Klasifikasi</h5>
+    <table id="table-result" class="table table-bordered" style="display: none">
+        <thead>
+
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+
+    <br><br>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+
+    function reload(){
+        $("#loader").text("Detail Klasifikasi...").show();
+        $(".table").hide();
+        $.ajax({
+            url: '/api/detail',
+            success: function(data){
+                data = JSON.parse(data);
+                if(data.status == 'ok'){
+                    html = "";
+                    tmp = ""
+
+                    k_means = data.result[0][0].length;
+
+                    tmp += '<tr><th>User</th>';
+                    for(var i=0; i < k_means; i++){
+                        tmp += `<th>C${i+1}</th>`;
+                    }
+                    tmp += `</tr>`;
+                    console.log(tmp);
+                    $("#table-result thead").html(tmp);
+
+                    for(var i=0; i < data.result.length; i++){
+                        for(var j=0; j < data.result[i].length; j++){
+                            html += `<tr><td>User ${data.index[i][0][j]+1}</td>`
+
+                            for(var k=0; k < k_means; k++){
+                                html += `<td>${data.result[i][j][k].toFixed(1)}</td>`
+                            }
+
+                            html == `</tr>`;
+                        }
+
+                        
+                    }
+
+                    
+                    $("#table-result tbody").html(html);
+                    $(".table").show();
+                    $(".caption").show();
+                    $("#loader").fadeOut();
+                } else {
+                    $("#loader").text("Normalisasi dataset belum dilakukan.");
+                }
+                
+            }
+        })
+    }
+
+    $(document).ready(function(){
+        reload();
+    })
+</script>
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Skripsi</title>
+{% endblock %}
+
+{% block body %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="/">Skripsi</a>
+  
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Abstrak</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/dataset">Dataset</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/preprocessing">Normalization</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/discretization">Discretization</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/kmeans">K-Means Clustering</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/pso">PSO</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/naive_bayes">Naive Bayes Classifier</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/detail">Detail Klasifikasi</a>
+        </li>
+      </ul>      
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Input dataset baru</label>
+                <input type="file" class="form-control" id="file-dataset">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label>&nbsp;</label>
+                <button id="btn-upload" class="btn btn-secondary btn-block">Upload</button>
+            </div>
+        </div>
+    </div>
+
+    <h4 id="loader" class="text-center">Memuat Dataset...</h4>
+
+    <table class="table table-bordered" style="display: none">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Category 1</th>
+                <th>Category 2</th>
+                <th>Category 3</th>
+                <th>Category 4</th>
+                <th>Category 5</th>
+                <th>Category 6</th>
+                <th>Category 7</th>
+                <th>Category 8</th>
+                <th>Category 9</th>
+                <th>Category 10</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+
+    function reload(){
+        $("#loader").text("Memuat Dataset...").show();
+        $(".table").hide();
+        $.ajax({
+            url: '/api/dataset',
+            success: function(data){
+                data = JSON.parse(data);
+                if(data.status == 'ok'){
+                    html = "";
+                    id = 1;
+                    data.result.forEach(element => {
+                        html += `<tr>
+                                    <td>${element['User ID']}</td>
+                                    <td>${element['Category 1']}</td>
+                                    <td>${element['Category 2']}</td>
+                                    <td>${element['Category 3']}</td>
+                                    <td>${element['Category 4']}</td>
+                                    <td>${element['Category 5']}</td>
+                                    <td>${element['Category 6']}</td>
+                                    <td>${element['Category 7']}</td>
+                                    <td>${element['Category 8']}</td>
+                                    <td>${element['Category 9']}</td>
+                                    <td>${element['Category 10']}</td>
+                                </tr>`;
+                        id += 1;
+                    });
+
+                    $(".table tbody").html(html);
+                    $(".table").show();
+                    $("#loader").fadeOut();
+                } else {
+                    $("#loader").text("File dataset tidak ditemukan. Silahkan upload dataset baru");
+                }
+                
+            }
+        })
+    }
+
+    $(document).ready(function(){
+        reload();
+
+        $("#btn-upload").click(function(){
+            var formData = new FormData();
+
+            formData.append("dataset", $("#file-dataset")[0].files[0]);
+
+            $.ajax({
+                url: '/api/dataset',
+                method: 'post',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(data){
+                    data = JSON.parse(data);
+                    if(data.status == "ok"){
+                        reload();
+                    } else {
+                        console.log(data.msg);
+                    }
+                }
+            })
+        })
+    })
+</script>
+{% endblock %}

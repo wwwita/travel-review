@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Skripsi Anna Witani</title>
+{% endblock %}
+
+{% block body %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="/">Skripsi</a>
+  
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Abstrak</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/dataset">Dataset</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/preprocessing">Normalization</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/discretization">Discretization</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/kmeans">K-Means Clustering</a>
+        </li>
+        <li class="nav-item active">
+            <a class="nav-link" href="/pso">PSO</a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/naive_bayes">Naive Bayes Classifier</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/detail">Detail Klasifikasi</a>
+        </li>
+      </ul>      
+    </div>
+</nav>
+
+<div class="container mt-5">
+
+    <div class="row">
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">c1 = </div>
+                    </div>
+                    <input id="c1" type="text" class="form-control" maxlength="5" value="2">
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">c2 = </div>
+                    </div>
+                    <input id="c2" type="text" class="form-control" maxlength="5" value="2">
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">w = </div>
+                    </div>
+                    <input id="w" type="text" class="form-control" maxlength="5" value="0.9">
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">n_particle = </div>
+                    </div>
+                    <input id="n_particle" type="text" class="form-control" maxlength="5" value="50">
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">Iteration = </div>
+                    </div>
+                    <input id="iteration" type="text" class="form-control" maxlength="5" value="100">
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <button id="btn-cluster" class="btn btn-block btn-primary">Mulai PSO</button>
+        </div>
+    </div>
+
+    <h4 id="loader" class="text-center" style="display: none;">Memproses Particle Swarm Optimization...</h4>
+
+    <table id="table-result" class="table table-bordered" style="display: none">
+        <thead>
+            
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+
+    function reload(){
+        
+        c1 = $("#c1").val()
+        c2 = $("#c2").val()
+        w = $("#w").val()
+        n_particle = $("#n_particle").val()
+        iteration = $("#iteration").val()
+
+        $("#loader").text("Memproses Particle Swarm Optimization...").show();
+        $(".table").hide();
+        $.ajax({
+            url: `/api/pso?c1=${c1}&c2=${c2}&w=${w}&n_particle=${n_particle}&iteration=${iteration}`,
+            success: function(data){
+                data = JSON.parse(data);
+                if(data.status == 'ok'){
+                    html1 = "";
+                    html2 = "";
+                    id = 1;
+                    for(var i=0; i < data.result.length; i++){
+                        html1 += `<tr>
+                                    <td>Category ${i+1}</td>
+                                    <td>${data.result[i]}</td>
+                                </tr>`;
+                    }
+
+                    $("#table-result tbody").html(html1);
+                    $(".table").show();
+                    $("#loader").fadeOut();
+                } else {
+                    $("#loader").text("Terdapat kesalahan pemrosesan.");
+                }
+                
+            }
+        })
+    }
+
+    $(document).ready(function(){
+        
+        
+        $("#btn-cluster").click(function(){
+            reload();
+        })
+    })
+</script>
+{% endblock %}

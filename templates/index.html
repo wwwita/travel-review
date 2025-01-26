@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Skripsi</title>
+{% endblock %}
+
+{% block body %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="/">Skripsi</a>
+  
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <li class="nav-item active">
+          <a class="nav-link" href="/">Abstrak</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/dataset">Dataset</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/preprocessing">Normalization</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/discretization">Discretization</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/kmeans">K-Means Clustering</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/pso">PSO</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/naive_bayes">Naive Bayes Classifier</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/detail">Detail Klasifikasi</a>
+        </li>
+      </ul>      
+    </div>
+</nav>
+
+<div class="container mt-5">
+  <div class="jumbotron">
+      <h3>PENERAPAN ALGORITMA K–MEANS UNTUK KLASIFIKASI REVIEW TRAVEL ONLINE MENGGUNAKAN DISCRETIZATION DAN SELEKSI FITUR PARTICLE SWARM OPTIMIZATION</h3>
+      <br>
+      <h4 class="lead">Oleh: <br><b>Anna Witani </b><b>4611416067</b></h4>
+      <hr class="my-4">
+      <p align="justify">Ilmu komputer banyak diimplementasikan dalam berbagai macam bidang keilmuwan, salah satunya adalah bidang pariwisata. Beragam kemudahan yang disediakan oleh situs layanan pariwisata online saat ini, seperti membagikan pendapat secara subjektif, rekomendasi, dan rating mengenai pengalaman travel dan akomodasi bagi penggunanya. Review dapat menjadi indikator popularitas objek wisata sehingga dapat mempengaruhi minat pengunjung. Namun semakin bertambahnya ulasan pengguna, akan menyebabkan penumpukkan data dan sulit untuk dilakukan analisa secara manual oleh manusia. Manusia membutuhkan suatu teknik untuk menganalisa data dalam jumlah yang besar menggunakan suatu pendekatan secara sistematis, yang disebut dengan data mining. Algoritma K– Means dan Naïve Bayes dengan discretization beserta seleksi fitur particle swarm optimization, dan juga algoritma K–Means dan Naïve Bayes tanpa discretization beserta seleksi fitur particle swarm optimization diterapkan pada klasifikasi review travel online. Keduanya menghasilkan akurasi yang baik. Hasil klasifikasi dari peninjauan perjalanan online dengan algoritma K–Means dan Naïve Bayes tanpa discretization beserta seleksi fitur particle swarm optimization menghasilkan akurasi terbaik sebesar 98.98% dan rata–rata akurasi sebesar 96.84%. Jika dibandingkan dengan algoritma K–Means dan Naïve Bayes dengan discretization beserta seleksi fitur particle swarm optimization menghasilkan akurasi terbaik sebesar 100% dan rata–rata akurasi sebesar 98.78%. Hal ini menunjukkan bahwa terjadi peningkatan akurasi terbaik sebesar 1.02% dan peningkatan rata–rata akurasi dari 10–fold sebesar 1.94% yang diperoleh dari 980 ulasan menggunakan 8 atribut, dimana sebelum proses fitur seleksi particle swarm optimization dilakukan, berjumlah 10 atribut.</p>
+      <div class="row">
+        <div class="col-md-3"></div>
+      </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+
+{% endblock %}

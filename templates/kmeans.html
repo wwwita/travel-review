@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Skripsi Anna Witani</title>
+{% endblock %}
+
+{% block body %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="/">Skripsi</a>
+  
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Abstrak</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/dataset">Dataset</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/preprocessing">Normalization</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/discretization">Discretization</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/kmeans">K-Means Clustering</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/pso">PSO</a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/naive_bayes">Naive Bayes Classifier</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/detail">Detail Klasifikasi</a>
+        </li>
+      </ul>      
+    </div>
+</nav>
+
+<div class="container mt-5">
+
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">K = </div>
+                    </div>
+                    <input id="n-cluster" type="text" class="form-control" maxlength="2" value="2">
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <button id="btn-cluster" class="btn btn-block btn-primary">Mulai Clustering</button>
+        </div>
+    </div>
+
+    <h4 id="loader" class="text-center" style="display: none;">Memproses K-Means Clustering...</h4>
+
+    <table id="table-centroid" class="table table-bordered" style="display: none">
+        <thead>
+            <tr>
+                <th class="text-center" colspan="11"><h5>Tabel Centroid Awal</h5></th>
+            </tr>
+            <tr>
+                <th>Centroid</th>
+                <th>Category 1</th>
+                <th>Category 2</th>
+                <th>Category 3</th>
+                <th>Category 4</th>
+                <th>Category 5</th>
+                <th>Category 6</th>
+                <th>Category 7</th>
+                <th>Category 8</th>
+                <th>Category 9</th>
+                <th>Category 10</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
+
+    <table id="table-result" class="table table-bordered" style="display: none">
+        <thead>
+            
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+
+    function reload(){
+        
+        var k = $("#n-cluster").val();
+        if(k > 10){
+            alert('Nilai k terlalu besar');
+            return;
+        } else if(k < 2){
+            alert('Nilai k terlalu kecil');
+            return;
+        }
+
+        $("#loader").text("Memproses K-Means Clustering...").show();
+        $(".table").hide();
+        $.ajax({
+            url: `/api/kmeans?k=${k}`,
+            success: function(data){
+                data = JSON.parse(data);
+                if(data.status == 'ok'){
+                    html1 = "";
+                    html2 = "";
+                    id = 1;
+                    for(var i=0; i < data.result.centroid.length; i++){
+                        html1 += `<tr>
+                                    <td>${i+1}</td>
+                                    <td>${data.result.centroid[i][0].toFixed(3)}</td>
+                                    <td>${data.result.centroid[i][1].toFixed(3)}</td>
+                                    <td>${data.result.centroid[i][2].toFixed(3)}</td>
+                                    <td>${data.result.centroid[i][3].toFixed(3)}</td>
+                                    <td>${data.result.centroid[i][4].toFixed(3)}</td>
+                                    <td>${data.result.centroid[i][5].toFixed(3)}</td>
+                                    <td>${data.result.centroid[i][6].toFixed(3)}</td>
+                                    <td>${data.result.centroid[i][7].toFixed(3)}</td>
+                                    <td>${data.result.centroid[i][8].toFixed(3)}</td>
+                                    <td>${data.result.centroid[i][9].toFixed(3)}</td>
+                                </tr>`;
+                    }
+
+                    var tmp = `
+                    <tr>
+                        <th class="text-center" colspan="${parseInt(k)+2}"><h5>Hasil Clustering</h5></th>
+                    </tr>
+                    <tr>
+                        <th class="text-center" rowspan="2">User</th>
+                        <th class="text-center" colspan="${k}">Centroid Distance</th>
+                        <th class="text-center" rowspan="2">Cluster</th>
+                    </tr>`;
+                    
+                    tmp += '<tr>';
+                    for(var i=0; i < k; i++){
+                        tmp += `<th>C${i+1}</th>`;
+                    }
+                    tmp += `</tr>`;
+                    console.log(tmp);
+                    $("#table-result thead").html(tmp);
+
+                    for(var i=0; i < data.result.label.length; i++){
+
+                        html2 += `<tr><td>User ${i+1}</td>`;
+
+                        for(var j=0; j < k; j++){
+                            if(Math.min(...data.result.value[i]) == data.result.value[i][j]){
+                                html2 += `<td class='text-danger'><b>${data.result.value[i][j].toFixed(3)}</b></td>`;
+                            } else {
+                                html2 += `<td>${data.result.value[i][j].toFixed(3)}</td>`;
+                            }
+                            
+                        }
+
+                        html2 += `<td>C${data.result.label[i]+1}</td></tr>`;
+                    }
+
+                    $("#table-centroid tbody").html(html1);
+                    $("#table-result tbody").html(html2);
+                    $(".table").show();
+                    $("#loader").fadeOut();
+                } else {
+                    $("#loader").text("Normalisasi dataset belum dilakukan.");
+                }
+                
+            }
+        })
+    }
+
+    $(document).ready(function(){
+        
+        
+        $("#btn-cluster").click(function(){
+            reload();
+        })
+    })
+</script>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Skripsi</title>
+{% endblock %}
+
+{% block body %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="/">Skripsi</a>
+  
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+      <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Abstrak</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/dataset">Dataset</a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/preprocessing">Normalization</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/discretization">Discretization</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/kmeans">K-Means Clustering</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/pso">PSO</a>
+          </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/naive_bayes">Naive Bayes Classifier</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/detail">Detail Klasifikasi</a>
+        </li>
+      </ul>      
+    </div>
+</nav>
+
+<div class="container mt-5">
+
+    <h4 id="loader" class="text-center">Memproses Normalisasi...</h4>
+
+    <table class="table table-bordered" style="display: none">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Category 1</th>
+                <th>Category 2</th>
+                <th>Category 3</th>
+                <th>Category 4</th>
+                <th>Category 5</th>
+                <th>Category 6</th>
+                <th>Category 7</th>
+                <th>Category 8</th>
+                <th>Category 9</th>
+                <th>Category 10</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+
+    function reload(){
+        $("#loader").text("Memproses Normalisasi...").show();
+        $(".table").hide();
+        $.ajax({
+            url: '/api/preprocessing',
+            success: function(data){
+                data = JSON.parse(data);
+                if(data.status == 'ok'){
+                    html = "";
+                    id = 1;
+                    data.result.forEach(element => {
+                        html += `<tr>
+                                    <td>User ${id}</td>
+                                    <td>${element[0].toFixed(3)}</td>
+                                    <td>${element[1].toFixed(3)}</td>
+                                    <td>${element[2].toFixed(3)}</td>
+                                    <td>${element[3].toFixed(3)}</td>
+                                    <td>${element[4].toFixed(3)}</td>
+                                    <td>${element[5].toFixed(3)}</td>
+                                    <td>${element[6].toFixed(3)}</td>
+                                    <td>${element[7].toFixed(3)}</td>
+                                    <td>${element[8].toFixed(3)}</td>
+                                    <td>${element[9].toFixed(3)}</td>
+                                </tr>`;
+                        id += 1;
+                    });
+
+                    $(".table tbody").html(html);
+                    $(".table").show();
+                    $("#loader").fadeOut();
+                } else {
+                    $("#loader").text("File dataset tidak ditemukan. Silahkan upload dataset terlebih dahulu");
+                }
+                
+            }
+        })
+    }
+
+    $(document).ready(function(){
+        reload();
+    })
+</script>
+{% endblock %}
